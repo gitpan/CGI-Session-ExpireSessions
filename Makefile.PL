@@ -7,20 +7,26 @@ WriteMakefile
 (
 	($] ge '5.005') ?
 	(
-		'AUTHOR' => 'Ron Savage (ron@savage.net.au)',
-		'ABSTRACT' => 'Delete expired CGI::Session db-based and file-based sessions',
+		'AUTHOR'	=> 'Ron Savage (ron@savage.net.au)',
+		'ABSTRACT'	=> 'Delete expired CGI::Session db-based and file-based sessions',
     ) : (),
-	clean				=>
+	clean			=>
 	{
-		FILES			=> 'blib/* Makefile MANIFEST CGI-Session-ExpireSessions-*'
+		FILES		=> 'blib/* Makefile MANIFEST CGI-Session-ExpireSessions-*'
 	},
-	dist				=>
+	dist			=>
 	{
-		COMPRESS		=> 'gzip',
-		SUFFIX			=> 'gz'
+		COMPRESS	=> 'gzip',
+		SUFFIX		=> 'gz'
 	},
-	DISTNAME			=> 'CGI-Session-ExpireSessions',
-	NAME				=> 'CGI::Session::ExpireSessions',
-	PREREQ_PM			=> {},
-	VERSION_FROM		=> 'lib/CGI/Session/ExpireSessions.pm',
+	DISTNAME		=> 'CGI-Session-ExpireSessions',
+	NAME			=> 'CGI::Session::ExpireSessions',
+	PL_FILES		=> {},
+	PREREQ_PM		=>
+	{
+		Carp		=> 0,
+		Test::More	=> 0,
+		Test::Pod	=> 0,
+	},
+	VERSION_FROM	=> 'lib/CGI/Session/ExpireSessions.pm',
 );

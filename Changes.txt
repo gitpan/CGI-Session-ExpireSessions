@@ -1,5 +1,9 @@
 Revision history for Perl extension CGI::Session::ExpireSessions.
 
+1.03  Mon Jul 19 14:47:00 2004
+	- Change Makefile.PL to coexist with Module::Build
+	- Add t/pod.t to test all PODs
+
 1.02  Tue Jun 29 10:08:00 2004
 	- Add code so sessions which have already expired are also deleted.
 		Originally, the module allowed you to force sessions to expire, via the delta parameter to new().
