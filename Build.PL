@@ -13,5 +13,6 @@ Module::Build -> new
 	requires		=>
 	{
 		Carp		=> 0,
+		File::Spec	=> 0,
 	},
 ) -> create_build_script();

@@ -36,6 +36,7 @@ require 5.005_62;
 require Exporter;
 
 use Carp;
+use File::Spec;
 
 our @ISA = qw(Exporter);
 
@@ -55,7 +56,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
 
 );
-our $VERSION = '1.03';
+our $VERSION = '1.04';
 
 # -----------------------------------------------
 
@@ -79,19 +80,20 @@ our $VERSION = '1.03';
 	{
 		my($self, $D)	= @_;
 		my($expired)	= 0;
+		my($time)		= time();
 
-		if ( (time() - $$D{'_SESSION_ATIME'}) >= $$self{'_delta'})
+		if ( ($time - $$D{'_SESSION_ATIME'}) >= $$self{'_delta'})
 		{
 			$expired = 1;
 
-			print STDOUT "Delta time: $$self{'_delta'}. Time lapsed: ", time() - $$D{'_SESSION_ATIME'}, ". Expired?: $expired. \n" if ($$self{'_verbose'});
+			print STDOUT "Delta time: $$self{'_delta'}. Time elapsed: ", $time - $$D{'_SESSION_ATIME'}, ". Expired?: $expired. \n" if ($$self{'_verbose'});
 		}
 
 		if ($$D{'_SESSION_ETIME'} && ! $expired)
 		{
-			$expired = 1 if (time() >= ($$D{'_SESSION_ATIME'} + $$D{'_SESSION_ETIME'}) );
+			$expired = 1 if ($time >= ($$D{'_SESSION_ATIME'} + $$D{'_SESSION_ETIME'}) );
 
-			print STDOUT "Last access time: $$D{'_SESSION_ATIME'}. Expiration time: $$D{'_SESSION_ETIME'}. Time lapsed: ", time() - $$D{'_SESSION_ATIME'}, ". Expired?: $expired. \n" if ($$self{'_verbose'});
+			print STDOUT "Last access time: $$D{'_SESSION_ATIME'}. Expiration time: $$D{'_SESSION_ETIME'}. Time elapsed: ", $time - $$D{'_SESSION_ATIME'}, ". Expired?: $expired. \n" if ($$self{'_verbose'});
 		}
 
 		$expired;
@@ -154,26 +156,57 @@ sub expire_file_sessions
 	my($self) = @_;
 
 	opendir(INX, $$self{'_temp_dir'}) || Carp::croak("Can't opendir($$self{'_temp_dir'}): $!");
-	my(@file) = grep{/cgisess_[0-9a-f]{32}/} readdir(INX);
+	my(@file) = map{File::Spec -> catfile($$self{'_temp_dir'}, $_)} grep{/cgisess_[0-9a-f]{32}/} readdir(INX);
 	closedir INX;
 
-	my($count) = 0;
+	my($count)	= 0;
+	my($time)	= time();
 
-	my($file, $D);
+	my($file, @stat, $D);
 
 	for my $file (@file)
 	{
+		@stat = stat($file);
+
+		# Delete old, tiny files.
+
+		if ( ( ($time - $stat[8]) >= $$self{'_delta'}) && ($stat[7] <= 5) )
+		{
+			$count++;
+
+			print STDOUT "Delta time: $$self{'_delta'}. Size: $stat[7] bytes. Time elapsed: ", $time - $stat[8], ". Expired?: 1. \n" if ($$self{'_verbose'});
+
+			unlink $file;
+
+			next;
+		}
+
+		# Ignore new, tiny files.
+
+		next if ($stat[7] <= 5);
+
 		open(INX, $file) || Carp::croak("Can't open($file): $!");
 		my(@session) = <INX>;
 		close INX;
 
+		# Pod/perlfunc.html#item_eval
+		# This does not work:
+		# eval{no warnings 'all'; $session[0]};
+
 		eval $session[0];
+
+		if ($@)
+		{
+			print STDOUT "Unable to parse contents of file: $file. \n" if ($$self{'_verbose'});
+
+			next;
+		}
 
 		if ($self -> _check_expiry($D) )
 		{
 			$count++;
 
-			print STDOUT "Expiring file id: $$D{'id'}. \n" if ($$self{'_verbose'});
+			print STDOUT "Expiring file id: $$D{'_SESSION_ID'}. \n" if ($$self{'_verbose'});
 
 			unlink $file;
 		}
@@ -263,7 +296,7 @@ It deletes CGI::Session-type sessions which have passed their use-by date.
 It works with CGI::Session-type sessions in a database or in disk files, but does not work with
 CGI::Session::PureSQL-type sessions.
 
-Sessions can be expired under either of two different conditions:
+Sessions can be expired under one of three conditions:
 
 =over 4
 
@@ -278,9 +311,9 @@ In other words, force sessions to expire.
 
 The module has always used this condition to delete sessions.
 
-The next condition is new as of V 1.02.
-
 =item The session has already expired
+
+This condition is new as of V 1.02.
 
 You want the session to be deleted now because it has already expired.
 
@@ -289,9 +322,18 @@ CGI::Session would delete the session automatically if you used CGI::Session to 
 
 Note: This condition assumes the session's expiration time is defined (it does not have to be).
 
+=item The file size is <= 5 bytes and was accessed more than 'delta' seconds ago
+
+This condition is new as of V 1.03.
+
+See below for how to provide a value of delta to the constructor.
+
+CGI::Session sometimes creates a file of size 0 bytes, so this test checks for such files,
+and deletes them if they are old enough.
+
 =back
 
-Sessions are deleted if either of these conditions is true.
+Sessions are deleted if any of these conditions is true.
 
 Sessions are deleted from the 'sessions' table in the database, or from the temp directory,
 depending on how you use CGI::Session.
@@ -305,6 +347,14 @@ See http://savage.net.au/Perl-modules.html for details.
 
 See http://savage.net.au/Perl-modules/html/installing-a-module.html for
 help on unpacking and installing each type of distro.
+
+=head1 Security
+
+For file-based sessions, C<CGI::Session::ExpireSessions> parses the first line of the
+file, using eval{}, in an attempt to determine the access and expiration times recorded
+within the file.
+
+So, if you are uneasy about the security implication of this, don't use this module.
 
 =head1 Constructor and initialization
 

@@ -1,5 +1,20 @@
 Revision history for Perl extension CGI::Session::ExpireSessions.
 
+1.04  Tue Nov 02 15:20:00 2004
+	- Note: All files referred to here match the CGI::Session file name format /cgisess_[0-9a-f]{32}/
+	- Fix the assumption in sub expire_file_sessions() that the program was being run in the temp directory,
+		by adding the temp directory's name as a prefix to all file names.
+		Original patch: Matthias Bläsing
+	- Fix sub expire_file_sessions() to delete files of size <= 5 bytes which are old enough. Files of size 0
+		are sometimes created by CGI::Session under unknown circumstances.
+		As always, use new(delta => 123) to change the definition of 'old enough'
+	- Fix verbose message for file session where it should have referred to $$D{'_SESSION_ID'}
+		and not $$D{'id'}. The latter was a careless copy-and-paste from the database code
+	- Ignore recent files whose size is <= 5 bytes
+	- Change text of verbose messages from 'Time lapsed' to 'Time elapsed'
+	- Add a security warning to the POD. Actually this comment is redundant, because you always read the POD,
+		right?
+
 1.03  Mon Jul 19 14:47:00 2004
 	- Change Makefile.PL to coexist with Module::Build
 	- Add t/pod.t to test all PODs

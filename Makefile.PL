@@ -25,6 +25,7 @@ WriteMakefile
 	PREREQ_PM		=>
 	{
 		Carp		=> 0,
+		File::Spec	=> 0,
 		Test::More	=> 0,
 		Test::Pod	=> 0,
 	},

@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: CGI-Session-ExpireSessions
-version: 1.03
+version: 1.04
 author:
   - Ron Savage <ron@savage.net.au>
 abstract: |-
@@ -8,8 +8,12 @@ abstract: |-
 license: artistic
 requires:
   Carp: 0
+  File::Spec: 0
 build_requires:
   Test::More: 0
   Test::Pod: 0
-provides: {}
-generated_by: Module::Build version 0.24
+provides:
+  CGI::Session::ExpireSessions:
+    file: lib/CGI/Session/ExpireSessions.pm
+    version: 1.04
+generated_by: Module::Build version 0.2602
