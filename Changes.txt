@@ -1,0 +1,4 @@
+Revision history for Perl extension CGI::Session::ExpireSessions.
+
+1.00  Mon Apr 19 12:37:29 2004
+	- Original version

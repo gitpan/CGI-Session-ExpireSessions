@@ -1,0 +1,8 @@
+Build.PL
+Changes.txt
+MANIFEST			This list of files
+META.yml
+README
+examples/expire-sessions.pl
+lib/CGI/Session/ExpireSessions.pm
+t/test.t

@@ -1,0 +1,40 @@
+README file for CGI::Session::ExpireSessions.
+
+1 Installing from a Unix-like distro
+------------------------------------
+shell>gunzip CGI-Session-ExpireSessions-1.00.tgz
+shell>tar mxvf CGI-Session-ExpireSessions-1.00.tar
+
+On Unix-like systems:
+
+shell>perl Build.PL
+shell>./Build
+shell>./Build test
+shell>./Build install
+
+On MS Windows-like systems:
+
+shell>perl Build.PL
+shell>perl Build
+shell>perl Build test
+shell>perl Build install
+
+On all systems:
+
+Run ExpireSessions.pm through you favourite pod2html translator.
+
+If you are using fancy-pom2.pl, with its 'default.css' file installed in
+/apache2/htdocs/css/, you'd do:
+
+	shell>perl fancy-pom2.pl html -css ExpireSessions.pm > /apache2/htdocs/ExpireSessions.html
+
+	or perhaps something like:
+
+	shell>perl fancy-pom2.pl html -css ExpireSessions.pm > /perl/html/site/lib/CGI/Session/ExpireSessions.html
+
+2 Installing from an ActiveState distro
+---------------------------------------
+shell>unzip CGI-Session-ExpireSessions-1.00.zip
+shell>ppm install --location=. CGI-Session-ExpireSessions
+shell>del CGI-Session-ExpireSessions-1.00.ppd
+shell>del PPM-CGI-Session-ExpireSessions-1.00.tar.gz

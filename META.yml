@@ -1,0 +1,12 @@
+--- #YAML:1.0
+name: CGI-Session-ExpireSessions
+version: 1.00
+author:
+  - Ron Savage <ron@savage.net.au>
+abstract: |-
+  Expires CGI::Session db-based and file-based sessions
+license: artistic
+requires:
+  Carp: 0
+provides: {}
+generated_by: Module::Build version 0.24
