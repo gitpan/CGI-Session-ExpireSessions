@@ -1,4 +1,18 @@
 Revision history for Perl extension CGI::Session::ExpireSessions.
 
+1.01  Tue Apr 27 10:01:00 2004
+	- Add another parameter to new(): table_name. This allows you to store sessions in a table with
+		a non-default name. The default name is of course 'sessions'. Thanx to Mark Stosberg for this
+		suggestion
+	- This module does not work with Mark's module CGI::Session::PureSQL. The best solution to this
+		problem seems to be to extend CGI::Session to offer a session iterator. This suggesion is also
+		from Mark. I will propose this today to the author of CGI::Session when I report the bug in
+		CGI:Session V 3.94 line 168, which says:
+			if ( $arg->isa('CGI') )
+		This bug means classes such as CGI::Simple can't be used here as a replacement for CGI.
+		The code needs to be something like:
+			if ($arg -> can('cookie') )...
+			elsif ($arg -> can('param') )...
+
 1.00  Mon Apr 19 12:37:29 2004
 	- Original version

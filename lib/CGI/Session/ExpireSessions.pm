@@ -55,7 +55,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
 
 );
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 # -----------------------------------------------
 
@@ -70,6 +70,7 @@ our $VERSION = '1.00';
 	(
 		_dbh		=> '',
 		_delta		=> 2 * 24 * 60 * 60,
+		_table_name	=> 'sessions',
 		_temp_dir	=> '/tmp',
 		_verbose	=> 0,
 	);
@@ -93,7 +94,7 @@ our $VERSION = '1.00';
 sub expire_db_sessions
 {
 	my($self)	= @_;
-	my($sth)	= $$self{'_dbh'} -> prepare('select * from sessions');
+	my($sth)	= $$self{'_dbh'} -> prepare("select * from $$self{'_table_name'}");
 
 	$sth -> execute();
 
@@ -114,16 +115,16 @@ sub expire_db_sessions
 	{
 		print STDOUT "Expiring db id: $_. \n" if ($$self{'_verbose'});
 
-		$sth = $$self{'_dbh'} -> prepare('delete from sessions where id = ?');
+		$sth = $$self{'_dbh'} -> prepare("delete from $$self{'_table_name'} where id = ?");
 
 		$sth -> execute($_);
 
 		$sth -> finish();
 	}
 
-	if ($#id < 0)
+	if ( ($#id < 0) && $$self{'_verbose'})
 	{
-		print STDOUT "No db ids are due to expire. \n" if ($$self{'_verbose'});
+		print STDOUT "No db ids are due to expire. \n";
 	}
 
 }	# End of expire_db_sessions.
@@ -245,6 +246,9 @@ C<CGI::Session::ExpireSessions> is a pure Perl module.
 
 It does no more than expire CGI::Session-type sessions which have passed their use-by date.
 
+It works with CGI::Session-type sessions in a database or in disk files, but does not work with
+CGI::Session::PureSQL-type sessions.
+
 Expiring a session means deleting that session from the 'sessions' table in the database,
 or deleting that session from the temp directory, depending on how you use CGI::Session.
 
@@ -286,6 +290,14 @@ whether or not the session will be expired.
 The default value is 2 * 24 * 60 * 60, which is the number of seconds in 2 days.
 
 Sessions which were last accessed more than 2 days ago are expired.
+
+This parameter is optional.
+
+=item table_name
+
+This is the name of the database table used to hold the sessions.
+
+The default value is 'sessions'.
 
 This parameter is optional.
 
