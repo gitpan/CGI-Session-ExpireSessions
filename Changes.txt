@@ -1,5 +1,12 @@
 Revision history for Perl extension CGI::Session::ExpireSessions.
 
+1.02  Tue Jun 29 10:08:00 2004
+	- Add code so sessions which have already expired are also deleted.
+		Originally, the module allowed you to force sessions to expire, via the delta parameter to new().
+		Now it also checks for sessions which have already expired, that is for sessions which CGI::Session
+		would delete automatically when retrieving them. Thanx to Adam Gent for this suggestion
+	- Rewrite the POD where it discusses expiration and deletion
+
 1.01  Tue Apr 27 10:01:00 2004
 	- Add another parameter to new(): table_name. This allows you to store sessions in a table with
 		a non-default name. The default name is of course 'sessions'. Thanx to Mark Stosberg for this

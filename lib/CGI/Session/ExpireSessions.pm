@@ -55,7 +55,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
 
 );
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 # -----------------------------------------------
 
@@ -69,11 +69,33 @@ our $VERSION = '1.01';
 	my(%_attr_data) =
 	(
 		_dbh		=> '',
-		_delta		=> 2 * 24 * 60 * 60,
+		_delta		=> 2 * 24 * 60 * 60, # Seconds.
 		_table_name	=> 'sessions',
 		_temp_dir	=> '/tmp',
 		_verbose	=> 0,
 	);
+
+	sub _check_expiry
+	{
+		my($self, $D)	= @_;
+		my($expired)	= 0;
+
+		if ( (time() - $$D{'_SESSION_ATIME'}) >= $$self{'_delta'})
+		{
+			$expired = 1;
+
+			print STDOUT "Delta time: $$self{'_delta'}. Time lapsed: ", time() - $$D{'_SESSION_ATIME'}, ". Expired?: $expired. \n" if ($$self{'_verbose'});
+		}
+
+		if ($$D{'_SESSION_ETIME'} && ! $expired)
+		{
+			$expired = 1 if (time() >= ($$D{'_SESSION_ATIME'} + $$D{'_SESSION_ETIME'}) );
+
+			print STDOUT "Last access time: $$D{'_SESSION_ATIME'}. Expiration time: $$D{'_SESSION_ETIME'}. Time lapsed: ", time() - $$D{'_SESSION_ATIME'}, ". Expired?: $expired. \n" if ($$self{'_verbose'});
+		}
+
+		$expired;
+	}
 
 	sub _default_for
 	{
@@ -98,17 +120,13 @@ sub expire_db_sessions
 
 	$sth -> execute();
 
-	my($data, $D, $session_has_expired, @id);
+	my($data, $D, @id);
 
 	while ($data = $sth -> fetchrow_hashref() )
 	{
 		eval $$data{'a_session'};
 
-		$session_has_expired = (time() - $$D{'_SESSION_ATIME'}) >= $$self{'_delta'} ? 1 : 0;
-
-		print STDOUT "Delta time: $$self{'_delta'}. Time lapsed: ", time() - $$D{'_SESSION_ATIME'}, ". Expired?: $session_has_expired. \n" if ($$self{'_verbose'});
-
-		push @id, $$data{'id'} if ($session_has_expired);
+		push @id, $$data{'id'} if ($self -> _check_expiry($D) );
 	}
 
 	for (@id)
@@ -141,7 +159,7 @@ sub expire_file_sessions
 
 	my($count) = 0;
 
-	my($file, $D, $session_has_expired);
+	my($file, $D);
 
 	for my $file (@file)
 	{
@@ -151,11 +169,7 @@ sub expire_file_sessions
 
 		eval $session[0];
 
-		$session_has_expired = (time() - $$D{'_SESSION_ATIME'}) >= $$self{'_delta'} ? 1 : 0;
-
-		print STDOUT "Delta time: $$self{'_delta'}. Time lapsed: ", time() - $$D{'_SESSION_ATIME'}, ". Expired?: $session_has_expired. \n" if ($$self{'_verbose'});
-
-		if ($session_has_expired)
+		if ($self -> _check_expiry($D) )
 		{
 			$count++;
 
@@ -210,7 +224,7 @@ __END__
 
 =head1 NAME
 
-C<CGI::Session::ExpireSessions> - Expires CGI::Session db-based and file-based sessions
+C<CGI::Session::ExpireSessions> - Delete expired CGI::Session db-based and file-based sessions
 
 =head1 Synopsis
 
@@ -244,13 +258,43 @@ C<CGI::Session::ExpireSessions> - Expires CGI::Session db-based and file-based s
 
 C<CGI::Session::ExpireSessions> is a pure Perl module.
 
-It does no more than expire CGI::Session-type sessions which have passed their use-by date.
+It deletes CGI::Session-type sessions which have passed their use-by date.
 
 It works with CGI::Session-type sessions in a database or in disk files, but does not work with
 CGI::Session::PureSQL-type sessions.
 
-Expiring a session means deleting that session from the 'sessions' table in the database,
-or deleting that session from the temp directory, depending on how you use CGI::Session.
+Sessions can be expired under either of two different conditions:
+
+=over 4
+
+=item You deem the session to be expired as of now
+
+You want the session to be expired and hence deleted now because it's last access time is longer ago than the
+time you specify in the call to new, using the delta parameter.
+
+That is, delete the session because the time span, between the last access time and now, is greater than delta.
+
+In other words, force sessions to expire.
+
+The module has always used this condition to delete sessions.
+
+The next condition is new as of V 1.02.
+
+=item The session has already expired
+
+You want the session to be deleted now because it has already expired.
+
+That is, you want this module to delete the session, rather than getting CGI::Session to delete it, when
+CGI::Session would delete the session automatically if you used CGI::Session to retrieve the session.
+
+Note: This condition assumes the session's expiration time is defined (it does not have to be).
+
+=back
+
+Sessions are deleted if either of these conditions is true.
+
+Sessions are deleted from the 'sessions' table in the database, or from the temp directory,
+depending on how you use CGI::Session.
 
 =head1 Distributions
 
