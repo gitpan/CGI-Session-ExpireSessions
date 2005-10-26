@@ -1,5 +1,14 @@
 Revision history for Perl extension CGI::Session::ExpireSessions.
 
+1.05  Wed Oct 26 11:25:00 2005
+	- Untaint the data read in from the sessions table before eval-ing it.
+		The problem, reported (with a code patch) by Dr RA Jones, was that
+		the original code triggered an insecure dependency warning when running
+		under -T, but only when using DBD::PgPP under MS Windows.
+		The exact reason for this warning in this situation remains a mystery
+	- Simplify code in new() to no longer check if caller is an object
+		as per the new standard on such matters
+
 1.04  Tue Nov 02 15:20:00 2004
 	- Note: All files referred to here match the CGI::Session file name format /cgisess_[0-9a-f]{32}/
 	- Fix the assumption in sub expire_file_sessions() that the program was being run in the temp directory,

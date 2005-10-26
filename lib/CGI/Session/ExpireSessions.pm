@@ -56,7 +56,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
 
 );
-our $VERSION = '1.04';
+our $VERSION = '1.05';
 
 # -----------------------------------------------
 
@@ -122,11 +122,15 @@ sub expire_db_sessions
 
 	$sth -> execute();
 
-	my($data, $D, @id);
+	my($data, $D, @id, $untainted_data);
 
 	while ($data = $sth -> fetchrow_hashref() )
 	{
-		eval $$data{'a_session'};
+		# Untaint the data the brute force way.
+
+		($untainted_data) = $$data{'a_session'} =~ /(.*)/;
+
+		eval $untainted_data;
 
 		push @id, $$data{'id'} if ($self -> _check_expiry($D) );
 	}
@@ -220,9 +224,7 @@ sub expire_file_sessions
 
 sub new
 {
-	my($caller, %arg)	= @_;
-	my($caller_is_obj)	= ref($caller);
-	my($class)			= $caller_is_obj || $caller;
+	my($class, %arg)	= @_;
 	my($self)			= bless({}, $class);
 
 	for my $attr_name ($self -> _standard_keys() )
@@ -232,10 +234,6 @@ sub new
 		if (exists($arg{$arg_name}) )
 		{
 			$$self{$attr_name} = $arg{$arg_name};
-		}
-		elsif ($caller_is_obj)
-		{
-			$$self{$attr_name} = $$caller{$attr_name};
 		}
 		else
 		{
