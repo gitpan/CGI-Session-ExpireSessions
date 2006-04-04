@@ -56,7 +56,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
 
 );
-our $VERSION = '1.05';
+our $VERSION = '1.06';
 
 # -----------------------------------------------
 
@@ -190,14 +190,17 @@ sub expire_file_sessions
 		next if ($stat[7] <= 5);
 
 		open(INX, $file) || Carp::croak("Can't open($file): $!");
+		binmode INX;
 		my(@session) = <INX>;
 		close INX;
 
 		# Pod/perlfunc.html#item_eval
 		# This does not work:
 		# eval{no warnings 'all'; $session[0]};
+		# This was when I used to say 'eval $session[0];', but that fails
+		# when the session data contains \n characters. Hence the join.
 
-		eval $session[0];
+		eval join('', @session);
 
 		if ($@)
 		{

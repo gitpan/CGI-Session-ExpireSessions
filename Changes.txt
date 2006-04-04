@@ -1,5 +1,11 @@
 Revision history for Perl extension CGI::Session::ExpireSessions.
 
+1.06  Tue Apr  4 10:04:00 2006
+	- Add binmode after open in sub expire_file_sessions
+	- Change "eval $session[0]" into "eval join('', @session)" to handle session data containing \n
+	- Add a new test, t/new-line.t, to test session data containing \n
+	- The problem with session data containing \n characters was reported via RT by m-uchino at yetipapa.com
+
 1.05  Wed Oct 26 11:25:00 2005
 	- Untaint the data read in from the sessions table before eval-ing it.
 		The problem, reported (with a code patch) by Dr RA Jones, was that
