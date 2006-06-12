@@ -24,10 +24,11 @@ WriteMakefile
 	PL_FILES		=> {},
 	PREREQ_PM		=>
 	{
-		Carp		=> 0,
-		File::Spec	=> 0,
-		Test::More	=> 0,
-		Test::Pod	=> 0,
+		Carp			=> 0,
+		CGI::Session	=> 4.14,
+		File::Spec		=> 0,
+		Test::More		=> 0,
+		Test::Pod		=> 0,
 	},
 	VERSION_FROM	=> 'lib/CGI/Session/ExpireSessions.pm',
 );

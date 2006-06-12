@@ -1,5 +1,21 @@
 Revision history for Perl extension CGI::Session::ExpireSessions.
 
+1.08  Mon Jun 12 11:32:00 2006
+	- Version 1.07 was never uploaded to CPAN. It was just available from my site, and was meant
+		for testing the proposed callback mechanism in CGI::Session::find. That mechanism was
+		changed before CGI::Session 4.14 was released, so my module's code now changes to match.
+		Also, since CGI::Session has been patched so its sub find() no longer updates the session's
+		access time, my module now uses atime instead of ctime when checking for expiry
+
+1.07  Wed Apr 12 14:36:00 2006
+	- Add method expire_sessions() which uses CGI::Session V 4 method find() to find all sessions,
+		and then expires sessions if appropriate. All this without evaling the contents of the session
+		and which therefore resolves RT bug 16069
+	- Document the new method and the new parameters to new()
+	- Add test t/03-delete-via-find.t to test the new code
+	- Add examples/expire-set.pl to demonstrate and document further ways of using the new method
+	- Make CGI::Session V 4.13 a prerequisite
+
 1.06  Tue Apr  4 10:04:00 2006
 	- Add binmode after open in sub expire_file_sessions
 	- Change "eval $session[0]" into "eval join('', @session)" to handle session data containing \n

@@ -18,20 +18,15 @@ BEGIN
 {
 	my($s) = new CGI::Session(undef, undef, {Directory => 't'} );
 
-	ok($s);
+	ok($s, 'The test session has been created');
 
 	$s -> expire(1);
 
-	ok($s -> id);
+	ok($s -> id, "The test session's id has been set");
 
 	$s -> param(purpose => "Test new-line within session data. Works with CGI::Session::ExpireSessions V 1.06\n");
 
-	ok($s -> param('purpose') );
+	ok($s -> param('purpose'), "The test session's parameter called 'purpose' has been set");
 }
 
-# Sleep 2 hoping than at least 1 whole second has elapsed before
-# we try to access the session. Sleep is not precise...
-
-sleep(2);
-
-CGI::Session::ExpireSessions -> new(delta => 0, temp_dir => 't') -> expire_file_sessions();
+CGI::Session::ExpireSessions -> new(delta => 0, temp_dir => 't', verbose => 1) -> expire_file_sessions();
