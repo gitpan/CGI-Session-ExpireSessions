@@ -1,5 +1,11 @@
 Revision history for Perl extension CGI::Session::ExpireSessions.
 
+1.09  Thu May 15 11:11:00 2008
+	- Delete V 1.08 from CPAN and upload V 1.09, hoping CPAN will index it properly this time.
+	  All this because some uses have logged a ticket (RT#35515) about not being able
+	  to use 'cpan' to install the module. They are right, I can't get 'cpan' to work either
+	- Start shipping Changelog.ini
+
 1.08  Mon Jun 12 11:32:00 2006
 	- Version 1.07 was never uploaded to CPAN. It was just available from my site, and was meant
 		for testing the proposed callback mechanism in CGI::Session::find. That mechanism was
