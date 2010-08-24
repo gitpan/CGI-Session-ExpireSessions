@@ -57,7 +57,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
 
 );
-our $VERSION = '1.09';
+our $VERSION = '1.12';
 
 # -----------------------------------------------
 
@@ -629,18 +629,6 @@ See the examples/ directory in the distro.
 
 There are 2 demo programs: expire-sessions.pl and expire-set.pl.
 
-=head1 Required Modules
-
-=over 4
-
-=item Carp
-
-=item CGI::Session
-
-=item File::Spec
-
-=back
-
 =head1 Author
 
 C<CGI::Session::ExpireSessions> was written by Ron Savage I<E<lt>ron@savage.net.auE<gt>> in 2004.
@@ -649,8 +637,7 @@ Home page: http://savage.net.au/index.html
 
 =head1 Copyright
 
-Australian copyright (c) 2004, Ron Savage. All rights reserved.
-
+Australian copyright (c) 2004, Ron Savage.
 	All Programs of mine are 'OSI Certified Open Source Software';
 	you can redistribute them and/or modify them under the terms of
 	The Artistic License, a copy of which is available at:
