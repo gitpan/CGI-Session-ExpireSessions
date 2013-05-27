@@ -8,7 +8,7 @@ WriteMakefile
 	($] ge '5.005') ?
 	(
 		'AUTHOR'	=> 'Ron Savage (ron@savage.net.au)',
-		'ABSTRACT'	=> 'Delete expired CGI::Session db-based and file-based sessions',
+		'ABSTRACT'	=> 'Expires CGI::Session db-based and file-based sessions',
     ) : (),
 	clean			=>
 	{
@@ -21,6 +21,7 @@ WriteMakefile
 	},
 	DISTNAME		=> 'CGI-Session-ExpireSessions',
 	NAME			=> 'CGI::Session::ExpireSessions',
+	LICENSE   => 'artistic_2',
 	PL_FILES		=> {},
 	PREREQ_PM		=>
 	{
@@ -28,7 +29,7 @@ WriteMakefile
 		CGI::Session	=> 4.14,
 		File::Spec		=> 0,
 		Test::More		=> 0,
-		Test::Pod		=> 0,
+#		Test::Pod		=> 1.45, # Make it optional. See t/pod.t
 	},
 	VERSION_FROM	=> 'lib/CGI/Session/ExpireSessions.pm',
 );

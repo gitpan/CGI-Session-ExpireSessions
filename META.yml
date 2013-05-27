@@ -1,14 +1,14 @@
 ---
-abstract: 'Delete expired C<CGI::Session>-type db-based and file-based sessions'
+abstract: 'Expires CGI::Session db-based and file-based sessions'
 author:
   - 'Ron Savage <ron@savage.net.au>'
 build_requires:
   Test::More: 0
-  Test::Pod: 0
 configure_requires:
-  Module::Build: 0.36
-generated_by: 'Module::Build version 0.3607'
-license: artistic
+  Module::Build: 0.38
+dynamic_config: 1
+generated_by: 'Module::Build version 0.4003, CPAN::Meta::Converter version 2.120921'
+license: artistic_2
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
@@ -16,11 +16,11 @@ name: CGI-Session-ExpireSessions
 provides:
   CGI::Session::ExpireSessions:
     file: lib/CGI/Session/ExpireSessions.pm
-    version: 1.12
+    version: 1.13
 requires:
   CGI::Session: 4.14
   Carp: 0
   File::Spec: 0
 resources:
-  license: http://www.perlfoundation.org/artistic_license_1_0
-version: 1.12
+  license: http://www.perlfoundation.org/artistic_license_2_0
+version: 1.13

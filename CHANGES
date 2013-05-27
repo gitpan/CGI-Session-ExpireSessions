@@ -1,5 +1,12 @@
 Revision history for Perl extension CGI::Session::ExpireSessions.
 
+1.13  Mon May 27 15:57:00 2013
+	- Replace /usr/bin/perl with /usr/bin/env perl.
+	- Replace common::sense with use strict and use warnings, to get uninit var warnings.
+	- Rename test files from \d\d-*.t to *.t.
+	- Clean up the POD so it passes tests. Specifically, '=item 1' becomes '=item o 1', and all other '=item'
+		tokens are replaced by '=item o' to match.
+
 1.12  Sun Feb 21 12:54:42 2010
 	- Remove text 'All rights reserved' (for Debian licensing).
 	- Remove POD heads 'Required Modules' and 'Changes'.
